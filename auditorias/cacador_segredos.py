@@ -1,43 +1,49 @@
 import os
 import time
 
-# Termos proibidos que indicam que o programador esqueceu uma credencial no código
+# Termos proibidos que indicam credenciais esquecidas no código
 termos_perigosos = ["senha =", "password =", "api_token =", "api_key =", "secret ="]
 
-print("--- INICIANDO INSPEÇÃO AUTOMÁTICA DE ARQUIVOS (DEVSECOPS) ---")
-print("Vasculhando o diretório atrás de arquivos de código e senhas expostas...\n")
+print("--- INICIANDO INSPEÇÃO PROFUNDA E RECURSIVA (DEVSECOPS) ---")
+print("O Cão Farejador está vasculhando todas as pastas e subpastas do projeto...\n")
 time.sleep(1.0)
 
 vulnerabilidade_encontrada = False
 
-# O robô lista todos os arquivos que existem na pasta atual de trabalho
-# (Quando roda no GitHub Actions, ele varre a pasta do repositório)
-arquivos_na_pasta = os.listdir('.')
-
-for nome_arquivo in arquivos_na_pasta:
-    # O robô filtra para ler APENAS arquivos de código Python (ignorando manuais e o próprio script)
-    if nome_arquivo.endswith('.py') and nome_arquivo != 'cacador_segredos.py':
-        print(f"🔍 Inspecionando arquivo real encontrado: [{nome_arquivo}]")
-        
-        try:
-            # Abre o arquivo real em modo de leitura externa
-            with open(nome_arquivo, 'r', encoding='utf-8', errors='ignore') as arquivo_codigo:
-                
-                # Lê o arquivo linha por linha direto do disco
-                for numero_linha, linha_texto in enumerate(arquivo_codigo, start=1):
-                    linha_minuscula = linha_texto.lower()
+# TÉCNICA AVANÇADA: os.walk vai caminhar por TODAS as subpastas automaticamente
+# 'raiz' descobre onde estamos, 'pastas' mapeia subdiretórios e 'arquivos' lista os códigos
+for raiz, pastas, arquivos in os.walk('.'):
+    
+    for nome_arquivo in arquivos:
+        # Filtra para analisar apenas arquivos de código Python, ignorando o próprio caçador
+        if nome_arquivo.endswith('.py') and nome_arquivo != 'cacador_segredos.py':
+            
+            # Descobre o caminho completo do arquivo (ex: ./projeto_novo/site.py)
+            caminho_completo = os.path.join(raiz, nome_arquivo)
+            print(f"🔍 Farejando arquivo: {caminho_completo}")
+            
+            try:
+                # Abre o arquivo para ler as linhas de texto por fora
+                with open(caminho_completo, 'r', encoding='utf-8', errors='ignore') as arquivo_codigo:
                     
-                    # Procura os termos perigosos dentro da linha atual
-                    for termo in termos_perigosos:
-                        if termo in linha_minuscula:
-                            print(f"  🚨 [ALERTA] Credencial Exposta no arquivo [{nome_arquivo}] -> Linha {numero_linha}!")
-                            print(f"  💥 Trecho Flagrado: \"{linha_texto.strip()}\"\n")
-                            vulnerabilidade_encontrada = True
-                            
-        except Exception as e:
-            print(f"⚠️ Erro ao tentar ler o arquivo {nome_arquivo}: {e}")
+                    for numero_linha, linha_texto in enumerate(arquivo_codigo, start=1):
+                        linha_minuscula = linha_texto.lower()
+                        
+                        # Caça termos proibidos dentro da linha atual
+                        for termo in termos_perigosos:
+                            if termo in linha_minuscula:
+                                print(f"  🚨 [ALERTA DE SEGURANÇA] Credencial Exposta!")
+                                print(f"  📂 Arquivo: {caminho_completo}")
+                                print(f"  📍 Linha: {numero_linha}")
+                                print(f"  💥 Trecho Flagrado: \"{linha_texto.strip()}\"\n")
+                                vulnerabilities_encontrada = True
+                                
+            except Exception as e:
+                print(f"⚠️ Erro ao tentar ler o arquivo {caminho_completo}: {e}")
 
 if not vulnerabilidade_encontrada:
-    print("🔒 Seguro: Nenhum arquivo do projeto possui senhas ou chaves expostas. Aprovado!")
+    print("🔒 Perfeito! O Cão Farejador vasculhou todas as subpastas e o projeto está 100% SEGURO.")
+else:
+    print("❌ REPROVADO: Foram encontrados segredos expostos na estrutura de pastas.")
 
-print("\n--- INSPEÇÃO DE CÓDIGO CONCLUÍDA ---")
+print("\n--- VARREDURA RECURSIVA CONCLUÍDA ---")
