@@ -1,0 +1,26 @@
+name: Inspeção Automática de Segurança DevSecOps
+
+# Regra: Dispara o robô toda vez que alguém fizer um envio (push) para o repositório
+on: [push]
+
+jobs:
+  auditoria:
+    # O GitHub vai ligar um computador virtual com o sistema Linux (Ubuntu) na nuvem dele
+    runs-on: ubuntu-latest
+
+    steps:
+    # Passo 1: O robô baixa os códigos do seu repositório para dentro desse computador virtual
+    - name: Baixando os códigos do repositório
+      uses: actions/checkout@v4
+
+    # Passo 2: O robô instala o Python de forma automatizada
+    - name: Configurando o ambiente Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    # Passo 3: O robô entra na pasta certa e manda rodar o seu fiscal de segurança
+    - name: Executando o Caçador de Senhas Esquecidas
+      run: |
+        cd auditorias
+        python cacador_segredos.py
