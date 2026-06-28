@@ -1,42 +1,43 @@
+import os
 import time
-
-# Simulação de um arquivo de código real que um programador da empresa escreveu (site_vendas.py)
-# Olhe com atenção: o programador cometeu o erro gravíssimo de deixar senhas expostas no texto!
-codigo_do_desenvolvedor = [
-    "import os",
-    "print('Inicializando sistema de vendas v1.0')",
-    "banco_dados_url = 'mongodb://localhost:27017'",
-    "usuario_admin = 'root'",
-    "senha_secreta = 'SuperSenhaBanco2026!'", # 🚨 ERRO GRAVE: Senha exposta na linha 5!
-    "def conectar_banco():",
-    "    api_token = 'api_key_xyz1234567890abcdef'", # 🚨 ERRO GRAVE: Chave de acesso exposta!
-    "    return 'Conectado com sucesso'"
-]
 
 # Termos proibidos que indicam que o programador esqueceu uma credencial no código
 termos_perigosos = ["senha =", "password =", "api_token =", "api_key =", "secret ="]
 
-print("--- INICIANDO INSPEÇÃO DE SEGURANÇA NO CÓDIGO (DEVSECOPS) ---")
-print("Vasculhando linhas de programação atrás de senhas e segredos expostos...\n")
+print("--- INICIANDO INSPEÇÃO AUTOMÁTICA DE ARQUIVOS (DEVSECOPS) ---")
+print("Vasculhando o diretório atrás de arquivos de código e senhas expostas...\n")
 time.sleep(1.0)
 
 vulnerabilidade_encontrada = False
 
-# O robô fiscal analisa o código linha por linha, como se estivesse revisando uma redação
-for numero_linha, linha_texto in enumerate(codigo_do_desenvolvedor, start=1):
-    
-    # Passa o texto para letras minúsculas para não deixar passar nada (ex: Senha, SENHA, senha)
-    linha_minuscula = linha_texto.lower()
-    
-    # Verifica se algum dos termos proibidos está presente nesta linha
-    for termo in termos_perigosos:
-        if termo in linha_minuscula:
-            print(f"🚨 [ALERTA DE SEGURANÇA] Credencial Exposta Detectada na Linha {numero_linha}!")
-            print(f"💥 Trecho do Código Flagrado: \"{linha_texto.strip()}\"")
-            print(f"📊 Risco: Um hacker pode ler esse arquivo e roubar o acesso ao nosso sistema.\n")
-            vulnerabilidade_encontrada = True
+# O robô lista todos os arquivos que existem na pasta atual de trabalho
+# (Quando roda no GitHub Actions, ele varre a pasta do repositório)
+arquivos_na_pasta = os.listdir('.')
+
+for nome_arquivo in arquivos_na_pasta:
+    # O robô filtra para ler APENAS arquivos de código Python (ignorando manuais e o próprio script)
+    if nome_arquivo.endswith('.py') and nome_arquivo != 'cacador_segredos.py':
+        print(f"🔍 Inspecionando arquivo real encontrado: [{nome_arquivo}]")
+        
+        try:
+            # Abre o arquivo real em modo de leitura externa
+            with open(nome_arquivo, 'r', encoding='utf-8', errors='ignore') as arquivo_codigo:
+                
+                # Lê o arquivo linha por linha direto do disco
+                for numero_linha, linha_texto in enumerate(arquivo_codigo, start=1):
+                    linha_minuscula = linha_texto.lower()
+                    
+                    # Procura os termos perigosos dentro da linha atual
+                    for termo in termos_perigosos:
+                        if termo in linha_minuscula:
+                            print(f"  🚨 [ALERTA] Credencial Exposta no arquivo [{nome_arquivo}] -> Linha {numero_linha}!")
+                            print(f"  💥 Trecho Flagrado: \"{linha_texto.strip()}\"\n")
+                            vulnerabilidade_encontrada = True
+                            
+        except Exception as e:
+            print(f"⚠️ Erro ao tentar ler o arquivo {nome_arquivo}: {e}")
 
 if not vulnerabilidade_encontrada:
-    print("🔒 Seguro: Nenhuma senha ou chave secreta foi encontrada exposta no código. Aprovado!")
+    print("🔒 Seguro: Nenhum arquivo do projeto possui senhas ou chaves expostas. Aprovado!")
 
-print("--- INSPEÇÃO DE CÓDIGO CONCLUÍDA ---")
+print("\n--- INSPEÇÃO DE CÓDIGO CONCLUÍDA ---")
