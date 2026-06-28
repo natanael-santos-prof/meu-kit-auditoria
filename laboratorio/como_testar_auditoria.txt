@@ -1,0 +1,27 @@
+=====================================================================
+🔬 AMBIENTE DE TESTE PARA O KIT DE AUDITORIA (DEVSECOPS)
+=====================================================================
+
+Este kit foi projetado para o modelo DevSecOps Moderno. Você não precisa 
+de servidores ou sites externos para testá-lo, pois o laboratório 
+está integrado diretamente na nuvem do GitHub!
+
+---------------------------------------------------------------------
+🚀 Como rodar os testes na nuvem:
+---------------------------------------------------------------------
+
+1. O Laboratório do GitHub Actions:
+   - Toda vez que qualquer arquivo de código (.py) é enviado para este 
+     repositório, a nuvem do GitHub liga um servidor para testá-lo.
+
+2. Como simular uma falha e ver o robô trabalhando:
+   - Crie ou envie um arquivo de código Python qualquer para a pasta 'auditórios/'.
+   - Coloque de propósito uma linha escrita: senha = "123" ou api_key = "abc".
+   - Salve o arquivo.
+
+3. Onde ver o resultado:
+   - Vá no topo deste repositório e clique na aba "Actions".
+   - Clique no teste mais recente para abrir a tela preta do servidor.
+   - Abra a aba do "Cão Farejador" e veja o robô flagrando o arquivo e a linha exata que você acabou de criar.
+
+=====================================================================
